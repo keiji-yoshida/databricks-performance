@@ -21,7 +21,7 @@
 
 # MAGIC %md
 # MAGIC 1. Shuffle-and-replicate nested loop join
-# MAGIC 2. Sort merge join
+# MAGIC 2. Shuffile Sort merge join
 # MAGIC 3. Shuffle hash join
 # MAGIC 4. Broadcast hash join / broadcast nested loop join
 
@@ -38,17 +38,33 @@
 # COMMAND ----------
 
 # MAGIC %md
+# MAGIC ```sql
+# MAGIC SELECT /*+ SHUFFLE_REPLICATE_NL(t1) */ * FROM t1 INNER JOIN t2 ON t1.key = t2.key;
+# MAGIC ```
+
+# COMMAND ----------
+
+# MAGIC %md
 # MAGIC ### Description
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## 2. Sort Merge Join
+# MAGIC ## 2. Shuffle Sort Merge Join
 
 # COMMAND ----------
 
 # MAGIC %md
 # MAGIC ### Join Hints
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ```sql
+# MAGIC SELECT /*+ SHUFFLE_MERGE(t1) */ * FROM t1 INNER JOIN t2 ON t1.key = t2.key;
+# MAGIC SELECT /*+ MERGEJOIN(t1) */ * FROM t1 INNER JOIN t2 ON t1.key = t2.key;
+# MAGIC SELECT /*+ MERGE(t1) */ * FROM t1 INNER JOIN t2 ON t1.key = t2.key;
+# MAGIC ```
 
 # COMMAND ----------
 
@@ -68,6 +84,13 @@
 # COMMAND ----------
 
 # MAGIC %md
+# MAGIC ```sql
+# MAGIC SELECT /*+ SHUFFLE_HASH(t1) */ * FROM t1 INNER JOIN t2 ON t1.key = t2.key;
+# MAGIC ```
+
+# COMMAND ----------
+
+# MAGIC %md
 # MAGIC ### Description
 
 # COMMAND ----------
@@ -79,6 +102,15 @@
 
 # MAGIC %md
 # MAGIC ### Join Hints
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ```sql
+# MAGIC SELECT /*+ BROADCAST(t1) */ * FROM t1 INNER JOIN t2 ON t1.key = t2.key;
+# MAGIC SELECT /*+ BROADCASTJOIN (t1) */ * FROM t1 LEFT JOIN t2 ON t1.key = t2.key;
+# MAGIC SELECT /*+ MAPJOIN(t2) */ * FROM t1 RIGHT JOIN t2 ON t1.key = t2.key;
+# MAGIC ```
 
 # COMMAND ----------
 
