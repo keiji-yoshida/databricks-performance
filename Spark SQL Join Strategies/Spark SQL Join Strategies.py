@@ -10,20 +10,22 @@
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC A join strategy in Spark SQL is a way to process data in a Spark cluster to perform a table join. Understanding the characteristics of each join strategy is crucial for performance tuning of Spark jobs since the peformance of a Spark job differs hugely depending on a join strategy which is used in the job. This notebook describes a list of Spark SQL join strategies and the characteristics of each join strategy.
+# MAGIC A join strategy in Spark SQL is a way to process data in a Spark cluster to perform a table join. Understanding the characteristics of each join strategy is crucial for performance tuning of Spark jobs since the peformance of a Spark job differs hugely depending on a join strategy which is used in the job. This notebook describes the characteristics of each join strategy.
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## List of Join Strategies
+# MAGIC ## Summary
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC 1. Shuffle-and-replicate nested loop join
-# MAGIC 2. Shuffile Sort merge join
-# MAGIC 3. Shuffle hash join
-# MAGIC 4. Broadcast hash join / broadcast nested loop join
+# MAGIC | Join Strategy | Characteristics |
+# MAGIC | ------------- | --------------- |
+# MAGIC | **1. Shuffle-and-replicate Nested Loop Join**<br>`SELECT /*+ SHUFFLE_REPLICATE_NL(t1) */ * FROM t1 INNER JOIN t2` | Does not require join keys as it is a cartesian product of the tables. Avoid doing this if you can. |
+# MAGIC | **Shuffile Sort Merge Join**<br>`SELECT /*+ MERGE(t1) */ * FROM t1 INNER JOIN t2 ON t1.key = t2.key` | Robust. Can handle any data size. Needs to shuffle and sort data, slower in most cases when the table size is small. |
+# MAGIC | **Shuffle Hash Join**<br>`SELECT /*+ SHUFFLE_HASH(t1) */ * FROM t1 INNER JOIN t2 ON t1.key = t2.key;` | Needs to shuffle data but no sort. Can handle large tables, but will OOM too if data is skewed. One side is smallr (3x or more) and a partition of it can fit in memory. (Enable by `spark.sql.join.preferSortMergeJoin = false`)|
+# MAGIC | **Broadcast Hash Join / Broadcast Nested Loop Join**<br>`SELECT /*+ BROADCAST(t1) */ * FROM t1 INNER JOIN t2 ON t1.key = t2.key;` | Requires one side to be small. No shuffle, no sort, very fast. |
 
 # COMMAND ----------
 
@@ -33,43 +35,7 @@
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ### Join Hints
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ```sql
-# MAGIC SELECT /*+ SHUFFLE_REPLICATE_NL(t1) */ * FROM t1 INNER JOIN t2 ON t1.key = t2.key;
-# MAGIC ```
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ### Description
-
-# COMMAND ----------
-
-# MAGIC %md
 # MAGIC ## 2. Shuffle Sort Merge Join
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ### Join Hints
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ```sql
-# MAGIC SELECT /*+ SHUFFLE_MERGE(t1) */ * FROM t1 INNER JOIN t2 ON t1.key = t2.key;
-# MAGIC SELECT /*+ MERGEJOIN(t1) */ * FROM t1 INNER JOIN t2 ON t1.key = t2.key;
-# MAGIC SELECT /*+ MERGE(t1) */ * FROM t1 INNER JOIN t2 ON t1.key = t2.key;
-# MAGIC ```
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ### Description
 
 # COMMAND ----------
 
@@ -79,43 +45,7 @@
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ### Join Hints
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ```sql
-# MAGIC SELECT /*+ SHUFFLE_HASH(t1) */ * FROM t1 INNER JOIN t2 ON t1.key = t2.key;
-# MAGIC ```
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ### Description
-
-# COMMAND ----------
-
-# MAGIC %md
 # MAGIC ## 4. Broadcast Hash Join / Broadcast Nested Loop Join
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ### Join Hints
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ```sql
-# MAGIC SELECT /*+ BROADCAST(t1) */ * FROM t1 INNER JOIN t2 ON t1.key = t2.key;
-# MAGIC SELECT /*+ BROADCASTJOIN (t1) */ * FROM t1 LEFT JOIN t2 ON t1.key = t2.key;
-# MAGIC SELECT /*+ MAPJOIN(t2) */ * FROM t1 RIGHT JOIN t2 ON t1.key = t2.key;
-# MAGIC ```
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ### Description
 
 # COMMAND ----------
 
@@ -131,6 +61,21 @@
 
 # MAGIC %md
 # MAGIC 7.6 ML (includes Apache Spark 3.0.1, Scala 2.12)
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ### Preparation
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ### Table Creation
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ### Clean-up
 
 # COMMAND ----------
 
