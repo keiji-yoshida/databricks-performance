@@ -10,6 +10,16 @@
 # COMMAND ----------
 
 # MAGIC %md
+# MAGIC ## Abstract
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC A join strategy in Spark SQL is a way to process data in a Spark cluster to perform a table join. Understanding the characteristics of each join strategy is crucial for performance tuning of Spark jobs since the peformance of a Spark job differs hugely depending on a join strategy which is used in the job. This notebook describes a list of Spark SQL join strategies and the characteristics of each join strategy.
+
+# COMMAND ----------
+
+# MAGIC %md
 # MAGIC ## Resources
 
 # COMMAND ----------
